@@ -17,7 +17,6 @@ namespace Fls.Supervision.Api.Services
                     case("added"):
                         break;
                     default:
-                        payload = new PingPayload(t.zen);
                         break;
                 }
             return new GithubEvent<IGithubEventPayload>(id, payload);

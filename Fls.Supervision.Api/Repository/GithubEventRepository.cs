@@ -2,11 +2,11 @@ using Fls.Supervision.Api.Commands;
 using Convey.CQRS.Events;
 using System.Collections.Generic;
 
-namespace Fls.Supervision.Api.Database
+namespace Fls.Supervision.Api.Repository
 {
-
     class GithubEventRepository : IRepository
     {
+        
         public int Add(IEvent obj)
         {
             throw new System.NotImplementedException();
