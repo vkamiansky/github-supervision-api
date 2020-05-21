@@ -10,16 +10,18 @@ namespace Fls.Supervision.Api.Commands
     public class PingPayload : IGithubEventPayload
     {
         public string Zen { get; set; }
+        public PingPayload(string zen)
+        {
+            Zen = zen;
+        }
     }
 
-    public class ProcessGithubEvent<T> : IEvent
-      where T : IGithubEventPayload
+    public class GithubEvent<T> : IEvent
+    where T : IGithubEventPayload
     {
-
         public Guid Id { get; }
         public T Payload { get; private set; }
-
-        public ProcessGithubEvent(Guid id, T payload)
+        public GithubEvent(Guid id, T payload)
         {
             Id = id;
             Payload = payload;

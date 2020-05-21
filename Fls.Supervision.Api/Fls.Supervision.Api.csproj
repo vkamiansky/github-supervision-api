@@ -13,6 +13,7 @@
     <PackageReference Include="Convey.MessageBrokers.CQRS" Version="0.4.325" />
     <PackageReference Include="Convey.MessageBrokers.RabbitMQ" Version="0.4.325" />
     <PackageReference Include="Convey.WebApi" Version="0.4.325" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 

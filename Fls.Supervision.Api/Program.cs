@@ -9,6 +9,7 @@ using Convey.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Fls.Supervision.Api.Commands;
 
 namespace Fls.Supervision.Api
 {
@@ -32,7 +33,8 @@ namespace Fls.Supervision.Api
                         .UseConvey()
                         .UseEndpoints(endpoints => endpoints
                             .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
-                            .Get("ping", ctx => ctx.Response.WriteAsync("pong")))
+                            .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
+                            .Post<GithubEvent<IGithubEventPayload>>("WebHookHandler")) //?????????????????
                         .UseRabbitMq())
                     .UseLogging();
             });
