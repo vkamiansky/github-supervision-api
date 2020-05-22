@@ -16,3 +16,4 @@ COPY --from=build-env /app/out .
 ENV ASPNETCORE_URLS http://*:80
 ENV ASPNETCORE_ENVIRONMENT Docker
 ENTRYPOINT ["dotnet", "Fls.Supervision.Api.dll"]
+

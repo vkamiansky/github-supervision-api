@@ -1,12 +1,17 @@
 using System.Threading.Tasks;
 using Convey;
+using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
 
-public class ProcessGithubPingHandler<PingPayload> : IEventHandler<ProcessGithubEvent<PingPayload>>
+namespace Fls.Supervision.Api.Commands.Handlers
 {
-    public Task HandleAsync(ProcessGithubEvent<PingPayload> GithubEvent)
+
+    public class ProcessGithubEventHandler : ICommandHandler<ProcessGithubEvent>
     {
-        //do something
-        return new Task(() => {});
+        public Task HandleAsync(ProcessGithubEvent GithubEvent)
+        {
+            //do something
+            return new Task(() => { });
+        }
     }
 }

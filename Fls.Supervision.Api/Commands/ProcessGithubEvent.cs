@@ -1,28 +1,24 @@
 using System;
 using Convey.CQRS.Events;
+using Convey.CQRS.Commands;
 
 namespace Fls.Supervision.Api.Commands
 {
-    public interface IGithubEventPayload
+
+    public class ProcessGithubEvent : ICommand
     {
-    }
-
-    public class PingPayload : IGithubEventPayload
-    {
-        public string Zen { get; set; }
-    }
-
-    public class ProcessGithubEvent<T> : IEvent
-      where T : IGithubEventPayload
-    {
-
-        public Guid Id { get; }
-        public T Payload { get; private set; }
-
-        public ProcessGithubEvent(Guid id, T payload)
+        public class HookPayload
         {
-            Id = id;
-            Payload = payload;
+            public long Ig { get; set; }
+            public string Type { get; set; }
+            public string Name { get; set; }
         }
+        public string Zen { get; set; }
+        public long? HookId { get; set; } // Notice that all value types should be nullable. As they might not be present on some events.
+        public HookPayload Hook { get; set; } // This class we define here
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
+        // Add more fields using the above code as an example
     }
 }
