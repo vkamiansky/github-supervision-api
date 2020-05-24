@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Fls.Supervision.Api\Fls.Supervision.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.Test.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
