@@ -1,0 +1,104 @@
+version: "3.5"
+
+services:
+  consul:
+    image: consul
+    container_name: consul
+    restart: unless-stopped
+    ports:
+      - 8500:8500
+    networks:
+      - supervision
+    # volumes:
+    #   - consul:/consul/data
+
+  fabio:
+    image: fabiolb/fabio
+    container_name: fabio
+    restart: unless-stopped
+    environment:
+    - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
+    networks:
+      - supervision
+    ports:
+    - 9998:9998
+    - 9999:9999
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    networks:
+      - supervision
+    volumes:
+      - mongo:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - supervision
+    # volumes: 
+    #   - rabbitmq:/var/lib/rabbitmq
+
+  seq:
+    image: datalust/seq 
+    container_name: seq
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:80
+    networks:
+      - supervision
+    # volumes: 
+    #   - seq:/data
+
+  vault:
+    image: vault
+    container_name: vault
+    restart: unless-stopped
+    ports:
+      - 8200:8200
+    networks:
+      - supervision
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=secret
+    cap_add:
+      - IPC_LOCK
+
+  api-gateway:
+    image: fls/supervision-api
+    container_name: supervision-api
+    restart: unless-stopped
+    ports:
+      - 5050:80
+    networks:
+      - supervision
+
+networks:
+  supervision:
+    name: supervision-network
+
+volumes:
+  # consul:
+  #   driver: local
+  # grafana:
+  #   driver: local
+  mongo:
+    driver: local
+  # prometheus:
+  #   driver: local
+  # rabbitmq:
+  #   driver: local
+  redis:
+    driver: local
+  # seq:
+  #   driver: local
