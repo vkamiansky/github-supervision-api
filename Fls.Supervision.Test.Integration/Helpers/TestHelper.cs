@@ -11,7 +11,7 @@ namespace Fls.Supervision.Test.Integration.Helpers
     public static class TestHelper
     {
         // The file is configured to be copied to the output path if newer
-        private const string ConfigPath = ".\\appsettings.Test.json";
+        private const string ConfigPath = "./appsettings.Test.json";
 
         public static TestServer CreateTestServer(Func<IWebHostBuilder, IWebHostBuilder> useHost)
         {
