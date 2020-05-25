@@ -8,10 +8,8 @@ namespace Fls.Supervision.Api.Commands.Handlers
 
     public class ProcessGithubEventHandler : ICommandHandler<ProcessGithubEvent>
     {
-        public Task HandleAsync(ProcessGithubEvent GithubEvent)
+        public async Task HandleAsync(ProcessGithubEvent GithubEvent)
         {
-            //do something
-            return new Task(() => { });
         }
     }
 }

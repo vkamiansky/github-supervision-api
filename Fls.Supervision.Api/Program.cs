@@ -1,18 +1,19 @@
 
 using System.Threading.Tasks;
 using Convey;
+using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
 using Convey.Discovery.Consul;
 using Convey.LoadBalancing.Fabio;
 using Convey.Logging;
 using Convey.MessageBrokers.RabbitMQ;
+using Convey.Persistence.MongoDB;
 using Convey.WebApi;
 using Convey.WebApi.CQRS;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
-using Convey.CQRS.Commands;
 using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Api.Providers;
 using Fls.Supervision.Api.Providers.Implementations;
@@ -32,8 +33,9 @@ namespace Fls.Supervision.Api
         {
             webBuilder
                     .ConfigureServices(services => services
-                        .AddScoped<IStorageProvider, InMemoryStorageProvider>()
+                        .AddScoped<IStorageProvider, MongoStorageProvider>()
                         .AddConvey()
+                        .AddMongo()
                         //.AddConsul()
                         //.AddFabio()
                         .AddEventHandlers()
@@ -51,7 +53,6 @@ namespace Fls.Supervision.Api
                             .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new { Hook = cmd.Hook, Message = "Event accepted." }))))
                     //.UseRabbitMq())
                     .UseLogging();
-
             return webBuilder;
         }
     }
