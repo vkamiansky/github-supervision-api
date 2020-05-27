@@ -12,8 +12,6 @@ namespace Fls.Supervision.Api.Data.Repositories
     {
         private const string CollectionName = "PullRequestRecords";
 
-        private const int resultsPerPage = 10;
-
         public IMongoCollection<PullRequestRecordData> Collection { get; }
 
         public PullRequestRecordRepository(MongoDbOptions mongoOptions, IMongoClient mongoClient)
@@ -26,12 +24,12 @@ namespace Fls.Supervision.Api.Data.Repositories
             await Collection.InsertOneAsync(data);
         }
 
-        public Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
+        public async Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
         {
-            var items = FindAsync(predicate).Result;
+            var items = await FindAsync(predicate);
             var count = items.Count;
-            return Task.FromResult(PagedResult<PullRequestRecordData>.Create(items, query.Page, resultsPerPage,
-                decimal.ToInt32(decimal.Ceiling(decimal.Divide(Convert.ToDecimal(count), Convert.ToDecimal(resultsPerPage)))), count));
+            var resultsPerPage = query.Results;
+            return PagedResult<PullRequestRecordData>.Create(items, query.Page, resultsPerPage, (int) Math.Ceiling((double) count / resultsPerPage), count);
         }
 
         public async Task DeleteAsync(Guid id)
