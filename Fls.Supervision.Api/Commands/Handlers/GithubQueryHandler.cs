@@ -9,7 +9,7 @@ namespace Fls.Supervision.Api.Commands.Handlers
 {
     public class GithubQueryHandler : IQueryHandler<GithubQuery, List<ProcessGithubEvent>>
     {
-        public Task<List<ProcessGithubEvent>> HandleAsync(GithubQuery query)
+        public async Task<List<ProcessGithubEvent>> HandleAsync(GithubQuery query)
         {
 
             return null;
