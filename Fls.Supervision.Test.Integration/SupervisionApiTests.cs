@@ -39,5 +39,14 @@ namespace Fls.Supervision.Test.Integration
             System.Console.WriteLine(result);
             Assert.Equal("pong", result);
         }
+
+        [Fact]
+        public async void QueryTest()
+        {
+            var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
+            var client = TestHelper.CreateTestClient(server);
+            var result = await client.GetAsync(() => TestEndpoints.PingGet);
+            Assert.Equal("hereismyresult", result);
+        }
     }
 }

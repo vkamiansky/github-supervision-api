@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Convey;
 using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
+using Convey.CQRS.Queries;
 using Convey.Discovery.Consul;
 using Convey.LoadBalancing.Fabio;
 using Convey.Logging;
@@ -18,6 +19,7 @@ using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Api.Providers;
 using Fls.Supervision.Api.Providers.Implementations;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace Fls.Supervision.Api
 {
@@ -40,7 +42,9 @@ namespace Fls.Supervision.Api
                         //.AddFabio()
                         .AddEventHandlers()
                         .AddCommandHandlers()
+                        .AddQueryHandlers()
                         .AddInMemoryCommandDispatcher()
+                        .AddInMemoryQueryDispatcher()
                         //.AddRabbitMq()
                         .AddWebApi()
                         .Build())
@@ -49,7 +53,7 @@ namespace Fls.Supervision.Api
                         .UseDispatcherEndpoints(endpoints => endpoints
                             .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
                             .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
-                            .Get("query/{query_data}", ctx => ctx.Response.WriteAsync("здесь отвечаем на запросы"))
+                            .Get<GithubQuery,List<ProcessGithubEvent>>("query/{query_data}")
                             .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new { Hook = cmd.Hook, Message = "Event accepted." }))))
                     //.UseRabbitMq())
                     .UseLogging();
