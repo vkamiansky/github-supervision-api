@@ -20,6 +20,7 @@ using Fls.Supervision.Api.Providers;
 using Fls.Supervision.Api.Providers.Implementations;
 using System.Text.Json;
 using System.Collections.Generic;
+using Fls.Supervision.Api.Data;
 
 namespace Fls.Supervision.Api
 {
@@ -53,7 +54,7 @@ namespace Fls.Supervision.Api
                         .UseDispatcherEndpoints(endpoints => endpoints
                             .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
                             .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
-                            .Get<GithubQuery,List<ProcessGithubEvent>>("query/{query_data}")
+                            .Get<GithubQuery, List<PullRequestRecordData>>("query{query_data}")
                             .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new { Hook = cmd.Hook, Message = "Event accepted." }))))
                     //.UseRabbitMq())
                     .UseLogging();

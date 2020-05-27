@@ -12,7 +12,7 @@ namespace Fls.Supervision.Test.Integration
         public async void PingTest()
         {
             var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
-            TestHelper.EnsureBlankTestDb(server);
+            //TestHelper.EnsureBlankTestDb(server);
             var client = server.CreateTestClient();
             var result = await client.GetAsync(() => TestEndpoints.PingGet);
             Assert.Equal("pong", result);
@@ -45,8 +45,8 @@ namespace Fls.Supervision.Test.Integration
         {
             var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
             var client = TestHelper.CreateTestClient(server);
-            var result = await client.GetAsync(() => TestEndpoints.PingGet);
-            Assert.Equal("hereismyresult", result);
+            var result = await client.GetAsync(() => TestEndpoints.QueryGet);
+            Assert.Null(result);
         }
     }
 }
