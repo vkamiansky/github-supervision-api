@@ -12,7 +12,7 @@ namespace Fls.Supervision.Test.Integration
         public async void PingTest()
         {
             var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
-            TestHelper.EnsureBlankTestDb(server);
+            server.EnsureBlankTestDb();
             var client = server.CreateTestClient();
             var result = await client.GetAsync(() => TestEndpoints.PingGet);
             Assert.Equal("pong", result);

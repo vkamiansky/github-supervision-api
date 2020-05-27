@@ -1,5 +1,4 @@
 using Convey.Persistence.MongoDB;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Fls.Supervision.Api.Providers.Implementations
@@ -12,7 +11,7 @@ namespace Fls.Supervision.Api.Providers.Implementations
         {
             _mongoOptions = mongoOptions;
         }
-        
+
         public bool EnsureStorageDeleted()
         {
             new MongoClient(_mongoOptions.ConnectionString).DropDatabase(_mongoOptions.Database);

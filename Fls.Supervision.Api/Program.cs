@@ -1,12 +1,8 @@
-
 using System.Threading.Tasks;
 using Convey;
 using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
-using Convey.Discovery.Consul;
-using Convey.LoadBalancing.Fabio;
 using Convey.Logging;
-using Convey.MessageBrokers.RabbitMQ;
 using Convey.Persistence.MongoDB;
 using Convey.WebApi;
 using Convey.WebApi.CQRS;
@@ -25,43 +21,42 @@ namespace Fls.Supervision.Api
     {
         public static async Task OkAsync<T>(this HttpResponse response, T value)
         {
-            var serialized = JsonSerializer.Serialize<T>(value, new JsonSerializerOptions { WriteIndented = true });
+            var serialized = JsonSerializer.Serialize(value, new JsonSerializerOptions {WriteIndented = true});
             await response.WriteAsync(serialized);
         }
 
         public static IWebHostBuilder UseSupervisionApi(this IWebHostBuilder webBuilder)
         {
             webBuilder
-                    .ConfigureServices(services => services
-                        .AddScoped<IStorageProvider, MongoStorageProvider>()
-                        .AddConvey()
-                        .AddMongo()
-                        //.AddConsul()
-                        //.AddFabio()
-                        .AddEventHandlers()
-                        .AddCommandHandlers()
-                        .AddInMemoryCommandDispatcher()
-                        //.AddRabbitMq()
-                        .AddWebApi()
-                        .Build())
-                    .Configure(app => app
-                        .UseConvey()
-                        .UseDispatcherEndpoints(endpoints => endpoints
-                            .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
-                            .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
-                            .Get("query/{query_data}", ctx => ctx.Response.WriteAsync("здесь отвечаем на запросы"))
-                            .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new { Hook = cmd.Hook, Message = "Event accepted." }))))
-                    //.UseRabbitMq())
-                    .UseLogging();
+                .ConfigureServices(services => services
+                    .AddScoped<IStorageProvider, MongoStorageProvider>()
+                    .AddConvey()
+                    .AddMongo()
+                    //.AddConsul()
+                    //.AddFabio()
+                    .AddEventHandlers()
+                    .AddCommandHandlers()
+                    .AddInMemoryCommandDispatcher()
+                    //.AddRabbitMq()
+                    .AddWebApi()
+                    .Build())
+                .Configure(app => app
+                    .UseConvey()
+                    .UseDispatcherEndpoints(endpoints => endpoints
+                        .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
+                        .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
+                        .Get("query/{query_data}", ctx => ctx.Response.WriteAsync("здесь отвечаем на запросы"))
+                        .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new {Hook = cmd.Hook, Message = "Event accepted."}))))
+                //.UseRabbitMq())
+                .UseLogging();
             return webBuilder;
         }
     }
-    public class Program
-    {
-        public static Task Main(string[] args)
-            => CreateHostBuilder(args).Build().RunAsync();
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-            => Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder.UseSupervisionApi());
+    public static class Program
+    {
+        public static Task Main(string[] args) => CreateHostBuilder(args).Build().RunAsync();
+
+        private static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder.UseSupervisionApi());
     }
 }
