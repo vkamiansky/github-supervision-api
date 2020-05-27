@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Convey.CQRS.Queries;
@@ -25,9 +26,15 @@ namespace Fls.Supervision.Api.Data.Repositories
             await _collection.InsertOneAsync(entity);
         }
 
-        public Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
+        public async Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
         {
-            throw new NotImplementedException();
+            var result = await FindAsync(predicate);
+            return PagedResult<PullRequestRecordData>.Create(
+                result, 
+                query.Page, 
+                query.Results,
+                (int)Math.Ceiling((double)result.Count / query.Results),
+                result.Count);
         }
 
         public async Task DeleteAsync(Guid id)
