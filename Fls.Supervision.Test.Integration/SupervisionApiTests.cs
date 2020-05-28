@@ -4,6 +4,8 @@ using Fls.Supervision.Api;
 using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Test.Integration.Helpers;
 using Xunit;
+using System.IO;
+using System.Net;
 
 namespace Fls.Supervision.Test.Integration
 {
@@ -39,6 +41,17 @@ namespace Fls.Supervision.Test.Integration
             var expectedResult = "{\n  \"Hook\": {\n    \"Id\": 109948940,\n    \"Type\": \"Repository\",\n    \"Name\": \"web\"\n  },\n  \"Message\": \"Event accepted.\"\n}";
             var result = await client.PostJsonAsync(TestEndpoints.WebHookPost, testWebHookPayload);
             Assert.Equal(expectedResult, result);
+        }
+
+        [Fact]
+        public void GetCommitInfo()
+        {
+            String query = @"https://api.github.com/repos/vkamiansky/github-supervision-api/commits/98829a472d8aaa94650565a3cee5baf19c06e243";
+            WebRequest request = WebRequest.Create(query);
+            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+            {
+                String result = reader.ReadToEnd();
+            }
         }
     }
 }
