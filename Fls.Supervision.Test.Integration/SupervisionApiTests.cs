@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Fls.Supervision.Api;
 using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Test.Integration.Helpers;
@@ -12,7 +13,7 @@ namespace Fls.Supervision.Test.Integration
         public async void PingTest()
         {
             var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
-            server.EnsureBlankTestDb();
+            //TestHelper.EnsureBlankTestDb(server);
             var client = server.CreateTestClient();
             var result = await client.GetAsync(() => TestEndpoints.PingGet);
             Assert.Equal("pong", result);
@@ -35,9 +36,9 @@ namespace Fls.Supervision.Test.Integration
                     Name = "web"
                 }
             };
+            var expectedResult = "{\n  \"Hook\": {\n    \"Id\": 109948940,\n    \"Type\": \"Repository\",\n    \"Name\": \"web\"\n  },\n  \"Message\": \"Event accepted.\"\n}";
             var result = await client.PostJsonAsync(TestEndpoints.WebHookPost, testWebHookPayload);
-            System.Console.WriteLine(result);
-            Assert.Equal("pong", result);
+            Assert.Equal(expectedResult, result);
         }
     }
 }
