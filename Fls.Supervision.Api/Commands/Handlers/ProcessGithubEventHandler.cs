@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Convey;
 using Convey.CQRS.Commands;
@@ -18,7 +19,7 @@ namespace Fls.Supervision.Api.Commands.Handlers
         private NewCommitInfo EventToNewCommitInfo(ProcessGithubEvent githubEvent)
         {
             var info = new NewCommitInfo();
-            info.CommitDate = githubEvent.CreatedAt;
+            info.CommitDate = (DateTime)githubEvent.CreatedAt;
             return info;
         }
 

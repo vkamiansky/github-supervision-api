@@ -8,11 +8,11 @@ namespace Fls.Supervision.Api.Data
     {
         public Guid Id { get; set; }
 
-        public IEnumerable<TimeSpan> DelayHistory { get; set; }
+        public List<TimeSpan> DelayHistory { get; set; }
 
-        public IEnumerable<TimeSpan> GapHistory { get; set; }
+        public List<TimeSpan> GapHistory { get; set; }
 
-        public IEnumerable<ValueTuple<DateTime, PullRequestState>> StateHistory { get; set; }
+        public List<ValueTuple<DateTime, PullRequestState>> StateHistory { get; set; }
 
         public DateTime? LastCommitDate { get; set; }
 
