@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 using Convey;
 using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
+using Convey.CQRS.Queries;
+using Convey.Discovery.Consul;
+using Convey.LoadBalancing.Fabio;
 using Convey.Logging;
 using Convey.Persistence.MongoDB;
 using Convey.WebApi;
@@ -14,9 +17,11 @@ using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Api.Providers;
 using Fls.Supervision.Api.Providers.Implementations;
 using System.Text.Json;
+using System.Collections.Generic;
 using System;
 using System.Net;
 using System.IO;
+using Fls.Supervision.Api.Data;
 
 namespace Fls.Supervision.Api
 {
@@ -34,7 +39,9 @@ namespace Fls.Supervision.Api
                 .ConfigureServices(services => services
                     .AddScoped<IStorageProvider, MongoStorageProvider>()
                     .AddConvey()
+                    
                     .AddMongo()
+                    .AddMongoRepository<PullRequestRecordData, long>("PullRequestRecords")
                     //.AddConsul()
                     //.AddFabio()
                     .AddEventHandlers()

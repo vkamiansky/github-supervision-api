@@ -1,14 +1,12 @@
 
 using System;
-using Convey.CQRS.Events;
 using Convey.CQRS.Commands;
 
 namespace Fls.Supervision.Api.Commands
 {
 
     public class ProcessGithubEvent : ICommand
-    {
-        public CommandType Type { get; set; }
+    { 
         public class HookPayload
         {
             public long? Id { get; set; }
@@ -16,7 +14,7 @@ namespace Fls.Supervision.Api.Commands
             public string Name { get; set; }
         }
 
-        public class Repository
+        public class RepositoryPayload
         {
             public long? Id { get; set; }
             public string FullName { get; set; }
@@ -24,16 +22,19 @@ namespace Fls.Supervision.Api.Commands
             public bool? Fork { get; set; }
         }
 
-        public class Sender
+        public class SenderPayload
         {
             public string Login { get; set; }
             public long? Id { get; set; }
             public string ReceivedEventsUrl { get; set; }
         }
-
+        public CommandType Type { get; set; }
         public string Zen { get; set; }
         public long? HookId { get; set; } // Notice that all value types should be nullable. As they might not be present on some events.
         public HookPayload Hook { get; set; } // This class we define here
+        public RepositoryPayload Repository { get; set; } // This class we define here
+        public SenderPayload Sender { get; set; } // This class we define here
+
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

@@ -4,7 +4,7 @@ namespace Fls.Supervision.Api.Domain
 {
     public class NewReviewInfo : IInfo
     {
-        public String Creator { get; set; }
+        public string Creator { get; set; }
 
         public DateTime ReviewDate { get; set; }
     }

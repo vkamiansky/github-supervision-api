@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Convey.CQRS.Queries;
@@ -8,7 +9,7 @@ using MongoDB.Driver;
 
 namespace Fls.Supervision.Api.Data.Repositories
 {
-    public class PullRequestRecordRepository : IMongoRepository<PullRequestRecordData, Guid>
+    public class PullRequestRecordRepository : IMongoRepository<PullRequestRecordData, long>
     {
         private const string CollectionName = "PullRequestRecords";
 
@@ -29,10 +30,10 @@ namespace Fls.Supervision.Api.Data.Repositories
             var items = await FindAsync(predicate);
             var count = items.Count;
             var resultsPerPage = query.Results;
-            return PagedResult<PullRequestRecordData>.Create(items, query.Page, resultsPerPage, (int) Math.Ceiling((double) count / resultsPerPage), count);
+            return PagedResult<PullRequestRecordData>.Create(items, query.Page, resultsPerPage, (int)Math.Ceiling((double)count / resultsPerPage), count);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(long id)
         {
             await Collection.DeleteOneAsync(x => x.Id == id);
         }
@@ -52,7 +53,7 @@ namespace Fls.Supervision.Api.Data.Repositories
             return await (await Collection.FindAsync(predicate)).ToListAsync();
         }
 
-        public async Task<PullRequestRecordData> GetAsync(Guid id)
+        public async Task<PullRequestRecordData> GetAsync(long id)
         {
             return await (await Collection.FindAsync(data => data.Id == id)).FirstOrDefaultAsync();
         }
