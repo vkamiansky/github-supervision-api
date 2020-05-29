@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Convey.CQRS.Queries;
@@ -8,83 +9,78 @@ using MongoDB.Driver;
 
 namespace Fls.Supervision.Api.Data.Repositories
 {
-    public class PullRequestRecordRepository : IMongoRepository<PullRequestRecordData, Guid>
+    public class PullRequestRecordRepository : IMongoRepository<PullRequestRecordData, long>
     {
         private const string CollectionName = "PullRequestRecords";
-        private readonly IMongoCollection<PullRequestRecordData> _collection;
 
-        public IMongoCollection<PullRequestRecordData> Collection => _collection;
+        public IMongoCollection<PullRequestRecordData> Collection { get; }
 
         public PullRequestRecordRepository(MongoDbOptions mongoOptions, IMongoClient mongoClient)
         {
-            _collection = mongoClient.GetDatabase(mongoOptions.Database).GetCollection<PullRequestRecordData>(CollectionName);
+            Collection = mongoClient.GetDatabase(mongoOptions.Database).GetCollection<PullRequestRecordData>(CollectionName);
         }
 
-        public async Task AddAsync(PullRequestRecordData entity)
+        public async Task AddAsync(PullRequestRecordData data)
         {
-            await _collection.InsertOneAsync(entity);
+            await Collection.InsertOneAsync(data);
         }
 
-        public Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
+        public async Task<PagedResult<PullRequestRecordData>> BrowseAsync<TQuery>(Expression<Func<PullRequestRecordData, bool>> predicate, TQuery query) where TQuery : IPagedQuery
         {
-            throw new NotImplementedException();
+            var items = await FindAsync(predicate);
+            var count = items.Count;
+            var resultsPerPage = query.Results;
+            return PagedResult<PullRequestRecordData>.Create(items, query.Page, resultsPerPage, (int)Math.Ceiling((double)count / resultsPerPage), count);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(long id)
         {
-            await _collection.DeleteOneAsync(x => x.Id == id);
+            await Collection.DeleteOneAsync(x => x.Id == id);
         }
 
         public async Task DeleteAsync(Expression<Func<PullRequestRecordData, bool>> predicate)
         {
-            await _collection.DeleteManyAsync(predicate);
+            await Collection.DeleteOneAsync(predicate);
         }
 
         public async Task<bool> ExistsAsync(Expression<Func<PullRequestRecordData, bool>> predicate)
         {
-            return await (await _collection.FindAsync(predicate)).AnyAsync();
+            return await (await Collection.FindAsync(predicate)).AnyAsync();
         }
 
         public async Task<IReadOnlyList<PullRequestRecordData>> FindAsync(Expression<Func<PullRequestRecordData, bool>> predicate)
         {
-            var t = await _collection.FindAsync(predicate);
-            return t.ToList();
+            return await (await Collection.FindAsync(predicate)).ToListAsync();
         }
 
-        public async Task<PullRequestRecordData> GetAsync(Guid id)
+        public async Task<PullRequestRecordData> GetAsync(long id)
         {
-            var t = await _collection.FindAsync(e => e.Id == id);
-            return t.FirstOrDefault();
+            return await (await Collection.FindAsync(data => data.Id == id)).FirstOrDefaultAsync();
         }
 
         public async Task<PullRequestRecordData> GetAsync(Expression<Func<PullRequestRecordData, bool>> predicate)
         {
-            var t = await _collection.FindAsync(predicate);
-            return t.First();
+            return await (await Collection.FindAsync(predicate)).FirstOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(PullRequestRecordData entity)
+        public async Task UpdateAsync(PullRequestRecordData data)
         {
-            var builder = new UpdateDefinitionBuilder<PullRequestRecordData>();
-            var update = builder
-            .Set(x => x.DelayHistory, entity.DelayHistory)
-            .Set(x => x.GapHistory, entity.GapHistory)
-            .Set(x => x.LastCommitDate, entity.LastCommitDate)
-            .Set(x => x.LastReviewCommentDate, entity.LastReviewCommentDate)
-            .Set(x => x.StateHistory, entity.StateHistory);
-            var result = await _collection.UpdateOneAsync(x => x.Id == entity.Id, update);
+            await Collection.UpdateOneAsync(x => x.Id == data.Id, new UpdateDefinitionBuilder<PullRequestRecordData>()
+                .Set(x => x.DelayHistory, data.DelayHistory)
+                .Set(x => x.GapHistory, data.GapHistory)
+                .Set(x => x.LastCommitDate, data.LastCommitDate)
+                .Set(x => x.LastReviewCommentDate, data.LastReviewCommentDate)
+                .Set(x => x.StateHistory, data.StateHistory));
         }
 
-        public async Task UpdateAsync(PullRequestRecordData entity, Expression<Func<PullRequestRecordData, bool>> predicate)
+        public async Task UpdateAsync(PullRequestRecordData data, Expression<Func<PullRequestRecordData, bool>> predicate)
         {
-            var builder = new UpdateDefinitionBuilder<PullRequestRecordData>();
-            var update = builder
-            .Set(x => x.DelayHistory, entity.DelayHistory)
-            .Set(x => x.GapHistory, entity.GapHistory)
-            .Set(x => x.LastCommitDate, entity.LastCommitDate)
-            .Set(x => x.LastReviewCommentDate, entity.LastReviewCommentDate)
-            .Set(x => x.StateHistory, entity.StateHistory);
-            await _collection.UpdateOneAsync(predicate, update);
+            await Collection.UpdateOneAsync(predicate, new UpdateDefinitionBuilder<PullRequestRecordData>()
+                .Set(x => x.DelayHistory, data.DelayHistory)
+                .Set(x => x.GapHistory, data.GapHistory)
+                .Set(x => x.LastCommitDate, data.LastCommitDate)
+                .Set(x => x.LastReviewCommentDate, data.LastReviewCommentDate)
+                .Set(x => x.StateHistory, data.StateHistory));
         }
     }
 }

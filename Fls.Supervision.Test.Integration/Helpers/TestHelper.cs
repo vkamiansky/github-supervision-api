@@ -16,10 +16,7 @@ namespace Fls.Supervision.Test.Integration.Helpers
         public static TestServer CreateTestServer(Func<IWebHostBuilder, IWebHostBuilder> useHost)
         {
             return new TestServer(useHost(new WebHostBuilder())
-                .ConfigureAppConfiguration(builder =>
-                {
-                    builder.AddJsonFile(ConfigPath);
-                }));
+                .ConfigureAppConfiguration(builder => builder.AddJsonFile(ConfigPath)));
         }
 
         public static HttpClient CreateTestClient(this TestServer server)

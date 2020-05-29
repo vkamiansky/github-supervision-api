@@ -1,4 +1,3 @@
-
 using System.Threading.Tasks;
 using Convey;
 using Convey.CQRS.Commands;
@@ -7,7 +6,6 @@ using Convey.CQRS.Queries;
 using Convey.Discovery.Consul;
 using Convey.LoadBalancing.Fabio;
 using Convey.Logging;
-using Convey.MessageBrokers.RabbitMQ;
 using Convey.Persistence.MongoDB;
 using Convey.WebApi;
 using Convey.WebApi.CQRS;
@@ -20,6 +18,9 @@ using Fls.Supervision.Api.Providers;
 using Fls.Supervision.Api.Providers.Implementations;
 using System.Text.Json;
 using System.Collections.Generic;
+using System;
+using System.Net;
+using System.IO;
 using Fls.Supervision.Api.Data;
 using Microsoft.AspNetCore.Builder;
 using System.IO;
@@ -30,7 +31,7 @@ namespace Fls.Supervision.Api
     {
         public static async Task OkAsync<T>(this HttpResponse response, T value)
         {
-            var serialized = JsonSerializer.Serialize<T>(value, new JsonSerializerOptions { WriteIndented = true });
+            var serialized = JsonSerializer.Serialize(value, new JsonSerializerOptions {WriteIndented = true});
             await response.WriteAsync(serialized);
         }
 
@@ -82,12 +83,11 @@ namespace Fls.Supervision.Api
             return webBuilder;
         }
     }
-    public class Program
-    {
-        public static Task Main(string[] args)
-            => CreateHostBuilder(args).Build().RunAsync();
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-            => Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder.UseSupervisionApi());
+    public static class Program
+    {
+        public static Task Main(string[] args) => CreateHostBuilder(args).Build().RunAsync();
+
+        private static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder.UseSupervisionApi());
     }
 }
