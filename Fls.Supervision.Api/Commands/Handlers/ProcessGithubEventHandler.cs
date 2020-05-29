@@ -37,9 +37,9 @@ namespace Fls.Supervision.Api.Commands.Handlers
         private NewCommitInfo EventToNewCommitInfo(ProcessGithubEvent githubEvent)
         {
             var info = new NewCommitInfo();
-            if (githubEvent.CreatedAt!=null && githubEvent.Sender.Login != null)
+            if (githubEvent.CreatedAt.HasValue && githubEvent.Sender.Login != null)
             {
-                info.CommitDate = githubEvent.CreatedAt;
+                info.CommitDate = githubEvent.CreatedAt.Value;
                 info.Creator = githubEvent.Sender.Login;
             }
             return info;

@@ -1,5 +1,4 @@
 using Fls.Supervision.Api.Data;
-using Fls.Supervision.Api.Commands;
 using Fls.Supervision.Api.Domain;
 using System;
 
@@ -7,22 +6,21 @@ namespace Fls.Supervision.Api.Services.Implementations
 {
     public class GithubMetricsService
     {
-        
-        public GithubMetricsService()
+        public void RecalculateData(PullRequestRecordData data, NewCommitInfo info)
         {
-        }
-        
-        public async void RecalculateData(PullRequestRecordData data, NewCommitInfo info)
-        {
-            throw new NotImplementedException();
-            //data.DelayHistory.Add(githubEvent.UpdatedAt.Value - data.LastReviewCommentDate.Value);
+            data.DelayHistory.Add(data.LastCommitDate.HasValue ? info.CommitDate - data.LastCommitDate.Value : TimeSpan.Zero);
+            data.LastCommitDate = info.CommitDate;
         }
 
-        public async void CalculateGap(PullRequestRecordData data, NewReviewInfo info)
+        public void RecalculateGap(PullRequestRecordData data, NewReviewInfo info)
         {
-            throw new NotImplementedException();
-           //data.GapHistory.Add((githubEvent.UpdatedAt.Value - data.LastCommitDate.GetValueOrDefault()));
+            data.DelayHistory.Add(data.LastReviewCommentDate.HasValue ? info.ReviewDate - data.LastReviewCommentDate.Value : TimeSpan.Zero);
+            data.LastReviewCommentDate = info.ReviewDate;
         }
 
+        public void RecalculateState(PullRequestRecordData data, StateChangedInfo info)
+        {
+            data.StateHistory.Add(ValueTuple.Create(info.ChangeDate, info.NewState));
+        }
     }
 }

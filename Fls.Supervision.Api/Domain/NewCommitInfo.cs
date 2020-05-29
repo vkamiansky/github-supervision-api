@@ -4,10 +4,8 @@ namespace Fls.Supervision.Api.Domain
 {
     public class NewCommitInfo : IInfo
     {
-        public DateTime? CommitDate { get; set; }
-
-        public String Creator { get; set;}
-
+        public string Creator { get; set; }
         
+        public DateTime CommitDate { get; set; }
     }
 }
