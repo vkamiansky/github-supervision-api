@@ -42,16 +42,5 @@ namespace Fls.Supervision.Test.Integration
             var result = await client.PostJsonAsync(TestEndpoints.WebHookPost, testWebHookPayload);
             Assert.Equal(expectedResult, result);
         }
-
-        [Fact]
-        public void GetCommitInfo()
-        {
-            String query = @"https://api.github.com/repos/vkamiansky/github-supervision-api/commits/98829a472d8aaa94650565a3cee5baf19c06e243";
-            WebRequest request = WebRequest.Create(query);
-            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
-            {
-                String result = reader.ReadToEnd();
-            }
-        }
     }
 }
