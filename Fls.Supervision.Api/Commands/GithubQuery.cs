@@ -17,7 +17,7 @@ namespace Fls.Supervision.Api.Commands
         public int? pageNumber;
         public int? elementsPerPageNumber;
 
-        public Guid? Id { get; set; }
+        public long? Id { get; set; }
         public DateTime? LastCommitBefore { get; set; }
         public DateTime? LastCommitAfter { get; set; }
         public DateTime? LastReviewCommentBefore { get; set; }

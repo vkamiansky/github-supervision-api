@@ -15,13 +15,13 @@ namespace Fls.Supervision.Api.Commands.Handlers
 
     public class GithubQueryHandler : IQueryHandler<GithubQuery, List<PullRequestRecordData>>
     {
-        public GithubQueryHandler(IMongoRepository<PullRequestRecordData, Guid> githubRecordsRepository)
+        public GithubQueryHandler(IMongoRepository<PullRequestRecordData, long> githubRecordsRepository)
         {
             repository = githubRecordsRepository;
         }
 
         //private readonly GithubMetricsService service = new GithubMetricsService();
-        private readonly IMongoRepository<PullRequestRecordData, Guid> repository;
+        private readonly IMongoRepository<PullRequestRecordData, long> repository;
 
         public async Task<List<PullRequestRecordData>> HandleAsync(GithubQuery query)
         {
