@@ -32,7 +32,6 @@ namespace Fls.Supervision.Api.Commands.Handlers
             //         service.RecalculateData(data, (NewCommitInfo) info);
             //         break;
             // }
-            
         }
 
         private NewCommitInfo EventToNewCommitInfo(ProcessGithubEvent githubEvent)
