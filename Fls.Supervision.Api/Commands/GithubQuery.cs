@@ -15,7 +15,7 @@ namespace Fls.Supervision.Api.Commands
         public int? elementsPerPageNumber;
         public class QueryData
         {
-            public Guid? Id { get; set; }
+            public long? Id { get; set; }
             public TimeSpan[] DelayHistory { get; set; }
             public TimeSpan[] GapHistory { get; set; }
             public ValueTuple<DateTime, PullRequestState>[] StateHistory { get; set; }
