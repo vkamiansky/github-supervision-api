@@ -12,21 +12,26 @@ namespace Fls.Supervision.Api.Commands.Handlers
 {
     public class ProcessGithubEventHandler : ICommandHandler<ProcessGithubEvent>
     {
-        private GithubMetricsService service = new GithubMetricsService();
-        private PullRequestRecordRepository repository =
-            new PullRequestRecordRepository(new MongoDbOptions(), new MongoClient());
-        
+        public ProcessGithubEventHandler(IMongoRepository<PullRequestRecordData, long> githubRecordsRepository)
+        {
+            _githubRecordsRepository = githubRecordsRepository;
+        }
+    
+        private readonly GithubMetricsService service = new GithubMetricsService();
+        private readonly IMongoRepository<PullRequestRecordData, long> _githubRecordsRepository;        
         public async Task HandleAsync(ProcessGithubEvent githubEvent)
         {
-            IInfo info;
-            PullRequestRecordData data = await repository.GetAsync(new Guid(githubEvent.HookId.ToString()));
-            switch (githubEvent.Type)
-            {
-                case CommandType.PullRequest:
-                    info = EventToNewCommitInfo(githubEvent);
-                    service.RecalculateData(data, (NewCommitInfo) info);
-                    break;
-            }
+            // if(!githubEvent.HookId.HasValue)
+            //  throw new Exception("HookId must be specified");
+            // IInfo info;
+            // //PullRequestRecordData data = await _githubRecordsRepository.GetAsync(githubEvent.HookId);
+            // switch (githubEvent.Type)
+            // {
+            //     case CommandType.PullRequest:
+            //         info = EventToNewCommitInfo(githubEvent);
+            //         service.RecalculateData(data, (NewCommitInfo) info);
+            //         break;
+            // }
             
         }
 

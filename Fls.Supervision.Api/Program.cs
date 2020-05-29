@@ -17,6 +17,7 @@ using System.Text.Json;
 using System;
 using System.Net;
 using System.IO;
+using Fls.Supervision.Api.Data;
 
 namespace Fls.Supervision.Api
 {
@@ -34,7 +35,9 @@ namespace Fls.Supervision.Api
                 .ConfigureServices(services => services
                     .AddScoped<IStorageProvider, MongoStorageProvider>()
                     .AddConvey()
+                    
                     .AddMongo()
+                    .AddMongoRepository<PullRequestRecordData, long>("PullRequestRecords")
                     //.AddConsul()
                     //.AddFabio()
                     .AddEventHandlers()
