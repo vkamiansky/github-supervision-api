@@ -1,0 +1,9 @@
+2020-05-29 21:10:31.618 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2020-05-29 21:10:31.676 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44349/  
+2020-05-29 21:10:31.844 +03:00 [INF] Hosting environment: Development
+2020-05-29 21:10:31.844 +03:00 [INF] Content root path: C:\Users\thela\Source\Repos\github-supervision-api\Fls.Supervision.Api
+2020-05-29 21:10:32.016 +03:00 [INF] Executing endpoint ' HTTP: GET'
+2020-05-29 21:10:32.056 +03:00 [INF] Executed endpoint ' HTTP: GET'
+2020-05-29 21:10:32.067 +03:00 [INF] Request finished in 401.0701ms 200 
+2020-05-29 21:10:32.572 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44349/favicon.ico  
+2020-05-29 21:10:32.604 +03:00 [INF] Request finished in 33.2455ms 404 

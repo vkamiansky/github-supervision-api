@@ -21,6 +21,8 @@ using Fls.Supervision.Api.Providers.Implementations;
 using System.Text.Json;
 using System.Collections.Generic;
 using Fls.Supervision.Api.Data;
+using Microsoft.AspNetCore.Builder;
+using System.IO;
 
 namespace Fls.Supervision.Api
 {
@@ -36,6 +38,10 @@ namespace Fls.Supervision.Api
         {
             webBuilder
                     .ConfigureServices(services => services
+                    .Configure<IISServerOptions>(options =>
+                    {
+                        options.AllowSynchronousIO = true;
+                    })
                         .AddScoped<IStorageProvider, MongoStorageProvider>()
                         .AddConvey()
                         .AddMongo()
@@ -54,7 +60,22 @@ namespace Fls.Supervision.Api
                         .UseDispatcherEndpoints(endpoints => endpoints
                             .Get("", ctx => ctx.Response.WriteAsync("FLS Supervision API"))
                             .Get("ping", ctx => ctx.Response.WriteAsync("pong"))
-                            .Get<GithubQuery, List<PullRequestRecordData>>("query{query_data}")
+                            .Get<GithubQuery, List<PullRequestRecordData>>("query/{LastCommitAfter}/{LastCommitBefore}/{LastReviewCommentAfter}/{LastReviewCommentBefore}"/*,
+                            (query, cmx)=>{
+                                int.TryParse((string)cmx.Items["pageNumber"], out int t1);
+                                query.pageNumber = t1;
+                                int.TryParse((string)cmx.Items["elementsPerPageNumber"], out int t2);
+                                query.elementsPerPageNumber = t2;
+                                return null;
+                            }*/,
+                            afterDispatch: async (query, result, context) =>{
+                                var buf = new MemoryStream();
+                                await JsonSerializer.SerializeAsync(buf, result);
+                                buf.Position = 0;
+                                var r = new StreamReader(buf);
+                                await context.Response.OkAsync( await r.ReadToEndAsync() );
+                                r.Dispose();
+                               })
                             .Post<ProcessGithubEvent>("webhook", afterDispatch: (cmd, ctx) => ctx.Response.OkAsync(new { Hook = cmd.Hook, Message = "Event accepted." }))))
                     //.UseRabbitMq())
                     .UseLogging();
