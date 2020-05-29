@@ -2,11 +2,11 @@ using System;
 
 namespace Fls.Supervision.Api.Domain
 {
-    public class NewCommitInfo : Info
+    public class NewCommitInfo : IInfo
     {
-        public DateTime CommitDate { get; set; }
+        public DateTime? CommitDate { get; set; }
 
-        public String Creator { get; }
+        public String Creator { get; set;}
 
         
     }
