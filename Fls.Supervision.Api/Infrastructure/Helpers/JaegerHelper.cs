@@ -1,5 +1,6 @@
 using System;
-using opentracing;
+using OpenTracing;
+using Jaeger;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ namespace Fls.Supervision.Api
     public static class JaegerHelper
     {
         private const string JaegerServiceName = "supervision";
-        private const string JaegerAgentHost = "172.18.0.3";
+        private const string JaegerAgentHost = "84.201.135.181";
         private const string JaegerAgentPort = "6831";
         private const string JaegerSamplerType = "const";
         public static ITracer CreateTracer()
@@ -54,7 +55,8 @@ namespace Fls.Supervision.Api
                     catch(Exception ex)
                     {
                         TraceError(ex, span);
-                        throw ex;
+                        return default(T);
+                        //throw ex;
                     }
                 }
             }

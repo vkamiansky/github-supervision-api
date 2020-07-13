@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using OpenTracing;
 
 namespace Fls.Supervision.Api
 {
@@ -25,7 +29,31 @@ namespace Fls.Supervision.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // services.AddSingleton<ITracer>(JaegerHelper.CreateTracer());
             services.AddControllers();
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "API V1", Version = "v1" });
+                options.EnableAnnotations();
+                // options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                // {
+                //     Type = SecuritySchemeType.OAuth2,
+                //     Flows = new OpenApiOAuthFlows
+                //     {
+                //         Password = new OpenApiOAuthFlow
+                //         {
+                //             TokenUrl = new Uri("api/identity/auth", UriKind.Relative),
+                //             RefreshUrl = new Uri("api/identity/auth", UriKind.Relative),
+                //         },
+                //     }
+                // });
+
+                // options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +62,12 @@ namespace Fls.Supervision.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
 
             // app.UseHttpsRedirection();
@@ -46,6 +80,8 @@ namespace Fls.Supervision.Api
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }
