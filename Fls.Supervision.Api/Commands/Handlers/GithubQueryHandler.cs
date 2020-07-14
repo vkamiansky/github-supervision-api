@@ -7,45 +7,63 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fls.Supervision.Api.Data.Repositories;
 using MongoDB.Driver;
+using Convey.Persistence.MongoDB;
 
 namespace Fls.Supervision.Api.Commands.Handlers
 {
 
+
     public class GithubQueryHandler : IQueryHandler<GithubQuery, List<PullRequestRecordData>>
     {
-        private static readonly PullRequestRecordRepository repository = new PullRequestRecordRepository(null, null);   //[TODO] разобраться с репозиторием
+        public GithubQueryHandler(IMongoRepository<PullRequestRecordData, long> githubRecordsRepository)
+        {
+            repository = githubRecordsRepository;
+        }
+
+        //private readonly GithubMetricsService service = new GithubMetricsService();
+        private readonly IMongoRepository<PullRequestRecordData, long> repository;
 
         public async Task<List<PullRequestRecordData>> HandleAsync(GithubQuery query)
         {
-            if (query.queryData != null)
+            //return new List<PullRequestRecordData>() { new PullRequestRecordData() { LastCommitDate = new DateTime(100000) } };
+            if (query.Id.HasValue)
             {
-                if (query.queryData.Id.HasValue)
+                if (await repository.ExistsAsync(e => e.Id == query.Id))
                 {
-                    if (await repository.ExistsAsync(e => e.Id == query.queryData.Id))
-                    {
-                        return new List<PullRequestRecordData>() { await repository.GetAsync(query.queryData.Id.Value) };
-                    }
-                    return null;
+                    var t = await repository.GetAsync(query.Id.Value);
+                    return new List<PullRequestRecordData>() { t };
                 }
-
+                else return null;
+            }
+            else
+            {
                 Func<PullRequestRecordData, bool> t = e =>
                 {
-                    if (query.queryData.DelayHistory?.SequenceEqual(e.DelayHistory) ?? false) return false;
-                    if (query.queryData.GapHistory?.SequenceEqual(e.GapHistory) ?? false) return false;
-                    if (query.queryData.StateHistory?.SequenceEqual(e.StateHistory) ?? false) return false;
-                    if (query.queryData.LastCommitDate != e.LastCommitDate) return false;
-                    return query.queryData.LastReviewCommentDate == e.LastReviewCommentDate;
+                    if (query.LastCommitBefore.HasValue)
+                    {
+                        if (query.LastCommitBefore < e.LastCommitDate) return false;
+                    }
+                    if (query.LastCommitAfter.HasValue)
+                    {
+                        if (query.LastCommitAfter > e.LastCommitDate) return false;
+                    }
+                    if (query.LastReviewCommentBefore.HasValue)
+                    {
+                        if (query.LastReviewCommentBefore < e.LastReviewCommentDate) return false;
+                    }
+                    if (query.LastReviewCommentAfter.HasValue)
+                    {
+                        if (query.LastReviewCommentAfter > e.LastReviewCommentDate) return false;
+                    }
+                    return true;
                 };
                 if (query.elementsPerPageNumber.HasValue)
                 {
                     query.pageNumber ??= 50;
-                    return ((List<PullRequestRecordData>) await repository.FindAsync(e => t(e))).GetRange(
-                        (query.pageNumber.Value - 1) * query.elementsPerPageNumber.Value,
-                        query.elementsPerPageNumber.Value);
+                    return ((List<PullRequestRecordData>)await repository.FindAsync(e => t(e))).GetRange((query.pageNumber.Value - 1) * query.elementsPerPageNumber.Value, query.elementsPerPageNumber.Value);
                 }
-                return (List<PullRequestRecordData>) await repository.FindAsync(e => t(e));
+                else return (List<PullRequestRecordData>)await repository.FindAsync(e => t(e));
             }
-            return null;
         }
     }
 }

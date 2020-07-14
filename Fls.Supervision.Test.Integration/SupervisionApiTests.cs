@@ -49,7 +49,7 @@ namespace Fls.Supervision.Test.Integration
             var server = TestHelper.CreateTestServer(webHostBuilder => webHostBuilder.UseSupervisionApi());
             var client = TestHelper.CreateTestClient(server);
             var result = await client.GetAsync(() => TestEndpoints.QueryGet);
-            Assert.Null(result);
+            Assert.NotNull(result);
         }
     }
 }
