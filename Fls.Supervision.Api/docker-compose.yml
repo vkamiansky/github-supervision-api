@@ -1,0 +1,41 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+version: '3.5'
+
+services:
+  flssupervision:
+    image: flssupervision
+    container_name: fls-supervision
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+    networks: 
+      - supervision
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - 5775:5775
+      - 6831:6831
+      - 6832:6832
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 9411:9411
+    container_name: jaeger
+    environment: 
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    networks: 
+      - supervision
+
+      
+networks: 
+   supervision:
+      name: supervision-network
